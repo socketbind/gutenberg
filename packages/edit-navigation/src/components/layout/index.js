@@ -18,6 +18,7 @@ import {
 import useNavigationEditor from './use-navigation-editor';
 import useNavigationBlockEditor from './use-navigation-block-editor';
 import useMenuNotifications from './use-menu-notifications';
+import EditorEmptyState from './editor-empty-state';
 import ErrorBoundary from '../error-boundary';
 import NavigationEditorShortcuts from './shortcuts';
 import Header from '../header';
@@ -33,6 +34,7 @@ export default function Layout( { blockEditorSettings } ) {
 
 	const {
 		menus,
+		hasLoadedMenus,
 		selectedMenuId,
 		navigationPost,
 		selectMenu,
@@ -56,40 +58,46 @@ export default function Layout( { blockEditorSettings } ) {
 
 					<div className="edit-navigation-layout">
 						<Header
-							isPending={ ! navigationPost }
+							isPending={ ! hasLoadedMenus }
 							menus={ menus }
 							selectedMenuId={ selectedMenuId }
 							onSelectMenu={ selectMenu }
 						/>
 
-						<BlockEditorProvider
-							value={ blocks }
-							onInput={ onInput }
-							onChange={ onChange }
-							settings={ {
-								...blockEditorSettings,
-								templateLock: 'all',
-								hasFixedToolbar: true,
-							} }
-							useSubRegistry={ false }
-						>
-							<BlockEditorKeyboardShortcuts />
-							<NavigationEditorShortcuts
-								saveBlocks={ savePost }
-							/>
-							<Toolbar
-								isPending={ ! navigationPost }
-								navigationPost={ navigationPost }
-							/>
-							<Editor
-								isPending={ ! navigationPost }
-								blocks={ blocks }
-							/>
-							<InspectorAdditions
-								menuId={ selectedMenuId }
-								onDeleteMenu={ deleteMenu }
-							/>
-						</BlockEditorProvider>
+						{ ! navigationPost && (
+							<EditorEmptyState isPending={ hasLoadedMenus } />
+						) }
+
+						{ navigationPost && (
+							<BlockEditorProvider
+								value={ blocks }
+								onInput={ onInput }
+								onChange={ onChange }
+								settings={ {
+									...blockEditorSettings,
+									templateLock: 'all',
+									hasFixedToolbar: true,
+								} }
+								useSubRegistry={ false }
+							>
+								<BlockEditorKeyboardShortcuts />
+								<NavigationEditorShortcuts
+									saveBlocks={ savePost }
+								/>
+								<Toolbar
+									isPending={ ! hasLoadedMenus }
+									navigationPost={ navigationPost }
+								/>
+								<Editor
+									isPending={ ! hasLoadedMenus }
+									blocks={ blocks }
+								/>
+								<InspectorAdditions
+									menuId={ selectedMenuId }
+									onDeleteMenu={ deleteMenu }
+								/>
+							</BlockEditorProvider>
+						) }
 					</div>
 
 					<Popover.Slot />

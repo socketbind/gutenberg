@@ -10,10 +10,16 @@ import { useState, useEffect } from '@wordpress/element';
 import { store as editNavigationStore } from '../../store';
 
 export default function useNavigationEditor() {
-	const menus = useSelect(
-		( select ) => select( 'core' ).getMenus( { per_page: -1 } ),
-		[]
-	);
+	const { menus, hasLoadedMenus } = useSelect( ( select ) => {
+		const selectors = select( 'core' );
+		const params = { per_page: -1 };
+		return {
+			menus: selectors.getMenus( params ),
+			hasLoadedMenus: selectors.hasFinishedResolution( 'getMenus', [
+				params,
+			] ),
+		};
+	}, [] );
 
 	const [ selectedMenuId, setSelectedMenuId ] = useState( null );
 
@@ -48,6 +54,7 @@ export default function useNavigationEditor() {
 
 	return {
 		menus,
+		hasLoadedMenus,
 		selectedMenuId,
 		navigationPost,
 		selectMenu,
