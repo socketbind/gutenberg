@@ -65,7 +65,7 @@ export default function Layout( { blockEditorSettings } ) {
 						/>
 
 						{ ! navigationPost && (
-							<EditorEmptyState isPending={ hasLoadedMenus } />
+							<EditorEmptyState isPending={ ! hasLoadedMenus } />
 						) }
 
 						{ navigationPost && (
