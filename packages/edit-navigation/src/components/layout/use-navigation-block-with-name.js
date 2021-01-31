@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { BlockControls } from '@wordpress/block-editor';
@@ -10,55 +10,69 @@ import {
 	__experimentalEditInPlaceControl as EditInPlaceControl,
 	ToolbarGroup,
 } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
-export default function useNavigationBlockWithName( menuId ) {
+/**
+ * Internal dependencies
+ */
+import { MenuIdContext } from './index';
+
+const untitledMenu = __( '(untitled menu)' );
+const EditWithContext = ( { BlockEdit, saveMenu, blockEditProps } ) => {
+	const menuId = useContext( MenuIdContext );
 	const menu = useSelect( ( select ) => select( 'core' ).getMenu( menuId ), [
 		menuId,
 	] );
+	const menuName = menu?.name ?? untitledMenu;
+	return (
+		<>
+			<BlockEdit { ...blockEditProps } menuName={ menuName } />
+			<BlockControls>
+				<ToolbarGroup>
+					<EditInPlaceControl
+						label={ menuName }
+						onUpdate={ ( value ) => {
+							saveMenu( {
+								...menu,
+								name: value || untitledMenu,
+							} );
+						} }
+					/>
+				</ToolbarGroup>
+			</BlockControls>
+		</>
+	);
+};
 
+export default function useNavigationBlockWithName() {
 	const { saveMenu } = useDispatch( 'core' );
-	const menuName = menu?.name ?? '(untitled menu)';
 
 	useEffect( () => {
-		if ( menu ) {
-			const withMenuName = createHigherOrderComponent(
-				( BlockEdit ) => ( props ) => {
-					if ( props.name !== 'core/navigation' ) {
-						return <BlockEdit { ...props } />;
-					}
-					return (
-						<>
-							<BlockEdit { ...props } menuName={ menuName } />
-							<BlockControls>
-								<ToolbarGroup>
-									<EditInPlaceControl
-										label={ menuName }
-										onUpdate={ ( value ) => {
-											saveMenu( {
-												...menu,
-												name:
-													value || '(untitled menu)',
-											} );
-										} }
-									/>
-								</ToolbarGroup>
-							</BlockControls>
-						</>
-					);
-				},
-				'withMenuName'
-			);
-			addFilter(
+		const withMenuName = createHigherOrderComponent(
+			( BlockEdit ) => ( props ) => {
+				if ( props.name !== 'core/navigation' ) {
+					return <BlockEdit { ...props } />;
+				}
+				return (
+					<EditWithContext
+						saveMenu={ saveMenu }
+						BlockEdit={ BlockEdit }
+						blockEditProps={ props }
+					/>
+				);
+			},
+			'withMenuName'
+		);
+		addFilter(
+			'editor.BlockEdit',
+			'core/edit-navigation/with-menu-name',
+			withMenuName
+		);
+		return () =>
+			removeFilter(
 				'editor.BlockEdit',
 				'core/edit-navigation/with-menu-name',
 				withMenuName
 			);
-			return () =>
-				removeFilter(
-					'editor.BlockEdit',
-					'core/edit-navigation/with-menu-name',
-					withMenuName
-				);
-		}
-	}, [ menuId ] );
+	}, [] );
 }

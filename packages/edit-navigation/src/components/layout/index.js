@@ -6,6 +6,7 @@ import {
 	Popover,
 	SlotFillProvider,
 } from '@wordpress/components';
+import { createContext } from '@wordpress/element';
 import { useDispatch } from '@wordpress/data';
 import {
 	BlockEditorKeyboardShortcuts,
@@ -27,6 +28,8 @@ import Editor from '../editor';
 import InspectorAdditions from '../inspector-additions';
 import { store as editNavigationStore } from '../../store';
 import useNavigationBlockWithName from './use-navigation-block-with-name';
+
+export const MenuIdContext = createContext();
 
 export default function Layout( { blockEditorSettings } ) {
 	const { saveNavigationPost } = useDispatch( editNavigationStore );
@@ -65,34 +68,36 @@ export default function Layout( { blockEditorSettings } ) {
 							onSelectMenu={ selectMenu }
 						/>
 
-						<BlockEditorProvider
-							value={ blocks }
-							onInput={ onInput }
-							onChange={ onChange }
-							settings={ {
-								...blockEditorSettings,
-								templateLock: 'all',
-								hasFixedToolbar: true,
-							} }
-							useSubRegistry={ false }
-						>
-							<BlockEditorKeyboardShortcuts />
-							<NavigationEditorShortcuts
-								saveBlocks={ savePost }
-							/>
-							<Toolbar
-								isPending={ ! navigationPost }
-								navigationPost={ navigationPost }
-							/>
-							<Editor
-								isPending={ ! navigationPost }
-								blocks={ blocks }
-							/>
-							<InspectorAdditions
-								menuId={ selectedMenuId }
-								onDeleteMenu={ deleteMenu }
-							/>
-						</BlockEditorProvider>
+						<MenuIdContext.Provider value={ selectedMenuId }>
+							<BlockEditorProvider
+								value={ blocks }
+								onInput={ onInput }
+								onChange={ onChange }
+								settings={ {
+									...blockEditorSettings,
+									templateLock: 'all',
+									hasFixedToolbar: true,
+								} }
+								useSubRegistry={ false }
+							>
+								<BlockEditorKeyboardShortcuts />
+								<NavigationEditorShortcuts
+									saveBlocks={ savePost }
+								/>
+								<Toolbar
+									isPending={ ! navigationPost }
+									navigationPost={ navigationPost }
+								/>
+								<Editor
+									isPending={ ! navigationPost }
+									blocks={ blocks }
+								/>
+								<InspectorAdditions
+									menuId={ selectedMenuId }
+									onDeleteMenu={ deleteMenu }
+								/>
+							</BlockEditorProvider>
+						</MenuIdContext.Provider>
 					</div>
 
 					<Popover.Slot />
