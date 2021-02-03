@@ -40,6 +40,26 @@ const I18nContext = createContext( makeContextValue( defaultI18n ) );
 
 type I18nProviderProps = PropsWithChildren< { i18n: I18n } >;
 
+/**
+ * The `I18nProvider` should be mounted above any localized components:
+ *
+ * @example
+ * ```js
+ * import { createI18n } from '@wordpress/react-i18n';
+ * import { I18nProvider } from '@wordpress/react-i18n';
+ * const i18n = createI18n();
+ *
+ * ReactDom.render(
+ * 	<I18nProvider i18n={ i18n }>
+ * 		<App />
+ * 	</I18nProvider>,
+ * 	el
+ * );
+ * ```
+ *
+ * You can also instantiate the provider without the `i18n` prop. In that case it will use the
+ * default `I18n` instance exported from `@wordpress/i18n`.
+ */
 export function I18nProvider( props: I18nProviderProps ) {
 	const { children, i18n = defaultI18n } = props;
 	const [ update, forceUpdate ] = useReducer( () => [], [] );
@@ -57,28 +77,36 @@ export function I18nProvider( props: I18nProviderProps ) {
 }
 
 /**
- * React hook providing i18n translate functions
+ * React hook providing access to i18n functions. It exposes the `__`, `_x`, `_n`, `_nx`,
+ * `isRTL` and `hasTranslation` functions from [`@wordpress/i18n`](../i18n).
+ * Refer to their documentation there.
  *
  * @example
+ * ```js
+ * import { useI18n } from '@wordpress/react-i18n';
  *
- * import { useI18n } from '@automattic/react-i18n';
  * function MyComponent() {
- *   const { __ } = useI18n();
- *   return <div>{ __( 'Translate me.', 'text-domain' ) }</div>;
+ * 	const { __ } = useI18n();
+ * 	return __( 'Hello, world!' );
  * }
+ * ```
  */
 export const useI18n = () => useContext( I18nContext );
 
 /**
- * React higher order component hook providing i18n translate functions
+ * React higher-order component that passes the i18n translate functions (the same set
+ * as exposed by the `useI18n` hook) to the wrapped component as props.
  *
  * @example
+ * ```js
+ * import { withI18n } from '@wordpress/react-i18n';
  *
- * import { withI18n } from '@automattic/react-i18n';
  * function MyComponent( { __ } ) {
- *   return <div>{ __( 'Translate me.', 'text-domain' ) }</div>;
+ * 	return __( 'Hello, world!' );
  * }
+ *
  * export default withI18n( MyComponent );
+ * ```
  */
 export function withI18n< P extends I18nContextProps >(
 	InnerComponent: ComponentType< P >
