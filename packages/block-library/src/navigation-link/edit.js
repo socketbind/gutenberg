@@ -375,7 +375,8 @@ function NavigationLinkEdit( {
 					/>
 					{ isLinkOpen && (
 						<Popover
-							position="bottom center"
+							position="bottom right"
+							isAlternate={ true }
 							onClose={ () => setIsLinkOpen( false ) }
 						>
 							<LinkControl
