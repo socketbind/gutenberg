@@ -27,7 +27,6 @@ import Toolbar from '../toolbar';
 import Editor from '../editor';
 import InspectorAdditions from '../inspector-additions';
 import { store as editNavigationStore } from '../../store';
-import useNavigationBlockWithName from './use-navigation-block-with-name';
 
 export const MenuIdContext = createContext();
 
@@ -48,8 +47,6 @@ export default function Layout( { blockEditorSettings } ) {
 	);
 
 	useMenuNotifications( selectedMenuId );
-
-	useNavigationBlockWithName( selectedMenuId );
 
 	return (
 		<ErrorBoundary>
