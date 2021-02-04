@@ -46,7 +46,7 @@ export function useIsHovered( ref ) {
 		}
 
 		if ( isHovered ) {
-			return addListener( 'mouseout', false );
+			return addListener( 'mouseleave', false );
 		}
 
 		if ( isOutlineMode || isNavigationMode ) {
