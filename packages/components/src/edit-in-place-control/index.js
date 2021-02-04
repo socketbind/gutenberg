@@ -14,11 +14,23 @@ import { ENTER, ESCAPE } from '@wordpress/keycodes';
  */
 import Button from '../button';
 
+const baseInputCssClass = 'components-edit-in-place-control__input';
+const beforeTransitionInputCssClass = 'small';
+const afterTransitionInputCssClass = 'large';
+const withoutTransitionCssClass = `${ baseInputCssClass } ${ beforeTransitionInputCssClass }`;
+const withTransitionCssClass = `${ baseInputCssClass } ${ afterTransitionInputCssClass }`;
+const cancelEvent = ( event ) => (
+	event.preventDefault(), event.stopPropagation()
+);
+
 function EditInPlaceControl( { label = '', onClick = noop, onUpdate = noop } ) {
 	const [ edit, setEdit ] = useState( false );
 	const [ value, setValue ] = useState( label );
-	const prevValue = useRef();
+	const [ inputCssClasses, setInputCssClasses ] = useState(
+		withoutTransitionCssClass
+	);
 
+	const prevValue = useRef();
 	const inputRef = useRef();
 	const buttonRef = useRef();
 
@@ -34,7 +46,35 @@ function EditInPlaceControl( { label = '', onClick = noop, onUpdate = noop } ) {
 
 	return (
 		<>
-			{ ! edit && (
+			{ edit ? (
+				<input
+					ref={ inputRef }
+					className={ inputCssClasses }
+					value={ value }
+					onChange={ ( event ) => {
+						setValue( event.target.value );
+					} }
+					onFocus={ () =>
+						setInputCssClasses( withTransitionCssClass )
+					}
+					onBlur={ () => {
+						setEdit( false );
+						onUpdate( value );
+						setInputCssClasses( withoutTransitionCssClass );
+					} }
+					onKeyDown={ ( event ) => {
+						if ( ENTER === event.keyCode ) {
+							cancelEvent( event );
+							setEdit( ! edit );
+							onUpdate( value );
+						}
+						if ( ESCAPE === event.keyCode ) {
+							cancelEvent( event );
+							setValue( prevValue.current );
+						}
+					} }
+				/>
+			) : (
 				<Button
 					ref={ buttonRef }
 					className="components-edit-in-place-control__label"
@@ -45,35 +85,6 @@ function EditInPlaceControl( { label = '', onClick = noop, onUpdate = noop } ) {
 				>
 					{ value }
 				</Button>
-			) }
-			{ edit && (
-				<input
-					ref={ inputRef }
-					className="components-edit-in-place-control__input"
-					value={ value }
-					onChange={ ( event ) => {
-						setValue( event.target.value );
-					} }
-					onBlur={ () => {
-						setEdit( false );
-						onUpdate( value );
-					} }
-					onKeyDown={ ( event ) => {
-						if (
-							ENTER === event.keyCode ||
-							ESCAPE === event.keyCode
-						) {
-							event.preventDefault();
-							event.stopPropagation();
-							if ( ESCAPE === event.keyCode ) {
-								setValue( prevValue.current );
-							} else {
-								setEdit( ! edit );
-								onUpdate( value );
-							}
-						}
-					} }
-				/>
 			) }
 		</>
 	);

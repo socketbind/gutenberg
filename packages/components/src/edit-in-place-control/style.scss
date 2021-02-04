@@ -1,10 +1,18 @@
 .components-edit-in-place-control__label {
 	padding: $grid-unit-30;
-	width: 100%;
+	width: auto;
 }
 .components-edit-in-place-control__input {
 	margin-bottom: 1px;
 	text-indent: $grid-unit;
+	&.large {
+		width: 100%;
+		transition: width 0.1s;
+	}
+	&.small {
+		width: 50%;
+		transition: width 0.1s;
+	}
 }
 .block-editor-block-toolbar-animated-width-container {
 	width: auto !important;
