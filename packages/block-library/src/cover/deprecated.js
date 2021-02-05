@@ -30,6 +30,7 @@ import {
 } from './shared';
 
 const blockAttributes = {
+	align: { type: 'string' },
 	url: {
 		type: 'string',
 	},
