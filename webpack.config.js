@@ -24,10 +24,8 @@ const {
  */
 const { dependencies } = require( './package' );
 
-const {
-	NODE_ENV: mode = 'development',
-	WP_DEVTOOL: devtool = 'source-map',
-} = process.env;
+mode = 'development';
+devtool = 'source-map';
 
 const WORDPRESS_NAMESPACE = '@wordpress/';
 const BUNDLED_PACKAGES = [ '@wordpress/icons', '@wordpress/interface' ];
