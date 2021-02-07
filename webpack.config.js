@@ -26,7 +26,7 @@ const { dependencies } = require( './package' );
 
 const {
 	NODE_ENV: mode = 'development',
-	WP_DEVTOOL: devtool = mode === 'production' ? false : 'source-map',
+	WP_DEVTOOL: devtool = 'source-map',
 } = process.env;
 
 const WORDPRESS_NAMESPACE = '@wordpress/';
