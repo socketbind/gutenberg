@@ -67,27 +67,8 @@ const stylesTransform = ( content ) => {
 module.exports = {
 	optimization: {
 		// Only concatenate modules in production, when not analyzing bundles.
-		concatenateModules:
-			mode === 'production' && ! process.env.WP_BUNDLE_ANALYZER,
-		minimizer: [
-			new TerserPlugin( {
-				cache: true,
-				parallel: true,
-				sourceMap: mode !== 'production',
-				terserOptions: {
-					output: {
-						comments: /translators:/i,
-					},
-					compress: {
-						passes: 2,
-					},
-					mangle: {
-						reserved: [ '__', '_n', '_nx', '_x' ],
-					},
-				},
-				extractComments: false,
-			} ),
-		],
+		concatenateModules: false,
+		minimizer: false
 	},
 	mode,
 	entry: gutenbergPackages.reduce( ( memo, packageName ) => {
