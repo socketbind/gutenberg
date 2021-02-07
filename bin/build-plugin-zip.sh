@@ -99,7 +99,7 @@ done
 
 # Run the build.
 status "Installing dependencies... 📦"
-npm install -g npm@latest
+npm install -g npm@6
 npm ci
 status "Generating build... 👷‍♀️"
 npm run build
