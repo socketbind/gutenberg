@@ -68,7 +68,7 @@ module.exports = {
 	optimization: {
 		// Only concatenate modules in production, when not analyzing bundles.
 		concatenateModules: false,
-		minimizer: false
+		minimize: false
 	},
 	mode,
 	entry: gutenbergPackages.reduce( ( memo, packageName ) => {
